@@ -5,7 +5,7 @@
     "stats-lite": "^2.2.0"
   },
   "scripts": {
-    "start": "ts-node ./day4/index.ts"
+    "start": "ts-node ./day5/index.ts"
   },
 
   "devDependencies": {
