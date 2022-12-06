@@ -2,6 +2,7 @@ import fs from 'fs';
 import readline from 'readline';
 
 (async () => {
+    const isPart1 = false;
 
     const fileStream = fs.createReadStream('./day5/input.txt');
 
@@ -63,14 +64,22 @@ import readline from 'readline';
 
             const [, quantity, , from, , to] = line.split(' ').map(Number);
 
-            for (let i = 0; i < quantity; i++) {
-                stack[to].push(stack[from].pop() || '');
+            if (isPart1) {
+                for (let i = 0; i < quantity; i++) {
+                    stack[to].push(stack[from].pop() || '');
+                }
+            } else {
+                let crates: Array<string> = [];
+                for (let i = 0; i < quantity; i++) {
+                    crates.unshift(stack[from].pop() || '');
+                }
+                stack[to] = [...stack[to], ...crates];
             }
-          
+
         }
 
     }
-
+    
     //Remove the zero-based empty array at index zero from the display; 
     stack.shift();
 
