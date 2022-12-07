@@ -2,7 +2,10 @@ import fs from 'fs';
 import readline from 'readline';
 
 (async () => {
-    
+    const isPart1 = true;
+
+    let offset = isPart1 ? 0 : 10;
+
     const fileStream = fs.createReadStream('./day6/input.txt');
 
     const rl = readline.createInterface({
@@ -13,7 +16,7 @@ import readline from 'readline';
     let startOfPacketMarkerBuffer: Array<string> = new Array<string>();
     let startOfPacketMarkerBufferHash: Map<string, number> = new Map<string, number>();
     let startOfPacketMarker = 0;
-    
+
     for await (const line of rl) {
 
         for (let i = 0; i < line.length; i++) {
@@ -21,7 +24,7 @@ import readline from 'readline';
 
             startOfPacketMarkerBuffer.push(character);
 
-            if (startOfPacketMarkerBuffer.length === 5) {
+            if (startOfPacketMarkerBuffer.length === (offset + 5)) {
 
                 // Remove the first value from the array buffer
                 let charToRemove = startOfPacketMarkerBuffer.shift();
@@ -43,7 +46,7 @@ import readline from 'readline';
             startOfPacketMarkerBufferHash.set(character, startOfPacketMarkerBufferHash.get(character) + 1 || 1);
 
             // Look for uniqueness only once the buffer size has been reached
-            if (startOfPacketMarkerBufferHash.size === 4) {
+            if (startOfPacketMarkerBufferHash.size === (offset + 4)) {
 
                 // Convert from zero based to one based for the answer and break out of the loop since the answer has been found
                 startOfPacketMarker = i + 1;
