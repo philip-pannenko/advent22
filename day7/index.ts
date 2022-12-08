@@ -14,6 +14,8 @@ interface File {
 
 (async () => {
 
+    const isPart1 = false;
+
     const fileStream = fs.createReadStream('./day7/input.txt');
 
     const rl = readline.createInterface({
@@ -86,8 +88,22 @@ interface File {
 
     calculateDirectorySize();
 
-    console.log(Array.from(directoryTreeHash.values()).reduce(
-        (sum, directory) =>
-            directory.size < 100000 ? sum + directory.size : sum, 0));
+    if (isPart1) {
+        console.log(Array.from(directoryTreeHash.values()).reduce(
+            (sum, directory) =>
+                directory.size < 100000 ? sum + directory.size : sum, 0));
+    } else {
+        // @ts-ignore
+        let freeSpace = 70000000 - directoryTreeHash.get('/').size;
+        let spaceNeeded = 30000000 - freeSpace;
+
+        console.log(
+            // @ts-ignore
+            Array.from(directoryTreeHash.values())
+                .sort((a, b) => a.size - b.size)
+                .find(dir =>
+                    dir.size > spaceNeeded
+                ).size);
+    }
 
 })()

@@ -9,4 +9,12 @@ if CD is request, look for directory in hash.
 
 if LS is done, do nothing.
 
+30000000
+45349983
+15230886
+
+8381165
+94853
+24933642
+
 ```
