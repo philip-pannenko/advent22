@@ -3,6 +3,8 @@ import readline from 'readline';
 
 (async () => {
 
+    let isPart1 = false;
+
     const fileStream = fs.createReadStream('./day8/input.txt');
 
     const rl = readline.createInterface({
@@ -51,27 +53,58 @@ import readline from 'readline';
 
     }
 
-    // Check for visibility
-    let result = forest.map(forestRow => {
-        return forestRow.filter(tree => {
+    if (isPart1) {
+        // Check for visibility
+        let result = forest.map(forestRow => {
+            return forestRow.filter(tree => {
 
-            // Make sure all directions are visible
-            return ['left', 'right', 'top', 'bottom'].some(dir => {
+                // Make sure all directions are visible
+                return ['left', 'right', 'top', 'bottom'].some(dir => {
 
-                // @ts-ignore
-                let neighbor = tree[dir];
-                while (neighbor !== undefined) {
-                    if (neighbor.height >= tree.height) {
-                        // Break since this tree is hidden from this direction
-                        return false;
+                    // @ts-ignore
+                    let neighbor = tree[dir];
+                    while (neighbor !== undefined) {
+                        if (neighbor.height >= tree.height) {
+                            // Break since this tree is hidden from this direction
+                            return false;
+                        }
+                        neighbor = neighbor[dir];
                     }
-                    neighbor = neighbor[dir];
-                }
-                return true;
+                    return true;
+                });
             });
-        });
-    })
-    
-    console.log(result.reduce((cumulativeValue, forestRow) => cumulativeValue + forestRow.length, 0));
-    
+        })
+
+        console.log(result.reduce((cumulativeValue, forestRow) => cumulativeValue + forestRow.length, 0));
+
+    } else {
+        let result = forest.map(forestRow => {
+            return forestRow.map(tree => {
+                let scenicScore = 1;
+                ['left', 'right', 'top', 'bottom'].forEach(dir => {
+
+                    let viewingDistance = 0;
+                    // @ts-ignore
+                    let neighbor = tree[dir];
+                    while (neighbor !== undefined) {
+                        viewingDistance++;
+
+                        if (neighbor.height >= tree.height) {
+                            break;
+                        }
+
+                        neighbor = neighbor[dir];
+                    }
+                    scenicScore *= viewingDistance;
+                });
+
+                return scenicScore;
+            })
+        })
+
+        console.log(
+            Math.max(result.reduce((cumulativeValue, forestRow) =>
+                Math.max(...forestRow, cumulativeValue), 0)));
+    }
+
 })()
