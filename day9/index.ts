@@ -3,6 +3,10 @@ import readline from 'readline';
 
 (async () => {
 
+    let isPart1 = false;
+    let debug1 = false;
+    let debug2 = false;
+
     const fileStream = fs.createReadStream('./day9/input.txt');
 
     const rl = readline.createInterface({
@@ -10,23 +14,37 @@ import readline from 'readline';
         crlfDelay: Infinity,
     });
 
-    interface Rope {
+    interface Coordinates {
+        id: string; // simply for troubleshooting
         x: number;
         y: number;
     }
 
-    let headRope = Array<Rope>({x: 0, y: 0});
-    let tailRope = Array<Rope>({x: 0, y: 0});
-    let tailRoute = new Set<string>([tailRope[0].x + '-' + tailRope[0].y]);
+    let knotLength = isPart1 ? 1 : 9;
+    let headKnot: Coordinates = {id: 'H', x: 0, y: 0};
+    let knots: Array<Coordinates> = [];
+
+    for (let i = 0; i < knotLength; i++) {
+        knots.push({id: (i + 1).toString(), x: 0, y: 0});
+    }
+
+    let tailRoute = new Set<string>([headKnot.x + ',' + headKnot.y]);
+    if (debug2) console.log(`Tail Route: ${headKnot.x},${headKnot.y}`);
 
     for await (const line of rl) {
         let [dir, distance_s] = line.split(' ');
         let distance = Number.parseInt(distance_s);
 
+        if (debug1) console.log(`Performing Move ${line}`);
+
         for (let i = 0; i < distance; i++) {
+
+            if (debug1) console.log(` Move ${line} - (${i})`);
+
             let x: number = 0;
             let y: number = 0;
 
+            // Determine the movement coordinate
             switch (dir) {
                 case 'R':
                     x = 1;
@@ -42,32 +60,57 @@ import readline from 'readline';
                     break;
             }
 
-            // Grab the most recent x/y coordinates and create a new placement
-            //  onto which to increment by.
-            let currentHead = headRope[headRope.length - 1];
+            // Update the new knot coordinate as the one to have the following knot to compare against
+            let previousKnotPreMove = {...headKnot};
+            let previousKnotPostMove = headKnot;
 
-            let nextHead = {...currentHead};
-            nextHead.x += x;
-            nextHead.y += y;
+            // Move the knot to the new coordinates
+            headKnot.x += x;
+            headKnot.y += y;
 
-            headRope.push(nextHead);
+            if (debug1) console.log(`  Moving Knot ${headKnot.id} from ${previousKnotPreMove.x}-${previousKnotPreMove.y} to ${headKnot.x}-${headKnot.y}`)
 
-            let currentTail = tailRope[tailRope.length - 1];
-            if (Math.abs(nextHead.x - currentTail.x) === 2 ||
-                Math.abs(nextHead.y - currentTail.y) === 2) {
+            // Go through each knot and make modifications based on the previousKnot(Pre|Post)Moves
+            knots.forEach((knot, i) => {
 
-                let nextTail = {...currentTail};
-                nextTail.x = currentHead.x;
-                nextTail.y = currentHead.y;
+                // Duplicate the knot coordinates
+                let currentKnotMove = {...knot};
 
-                tailRope.push(nextTail);
+                // Move the current knot diagonally
+                if (Math.abs(currentKnotMove.y - previousKnotPostMove.y) == 2 &&
+                    Math.abs(currentKnotMove.x - previousKnotPostMove.x) == 2) {
+                    currentKnotMove.x = previousKnotPreMove.x;
+                    currentKnotMove.y = previousKnotPreMove.y;
+                }
 
-                tailRoute.add(nextTail.x + '-' + nextTail.y);
+                // Move the current knot horizontally
+                else if (Math.abs(currentKnotMove.y - previousKnotPostMove.y) == 2) {
+                    currentKnotMove.x = previousKnotPostMove.x;
+                    currentKnotMove.y = previousKnotPreMove.y;
+                }
 
-            }
+                // Move the current knot vertically
+                else if (Math.abs(currentKnotMove.x - previousKnotPostMove.x) == 2) {
+                    currentKnotMove.x = previousKnotPreMove.x;
+                    currentKnotMove.y = previousKnotPostMove.y;
+                }
 
+                if (debug1) console.log(`  Moving Knot ${currentKnotMove.id} from ${knots[i].x}-${knots[i].y} to ${currentKnotMove.x}-${currentKnotMove.y}`)
+
+                // Overwrite the current knot array reference with the current knot coordinate modifications
+                knots[i] = currentKnotMove;
+
+                // Update the new knot coordinate as the one to have the following knot to compare against
+                previousKnotPreMove = knot;
+                previousKnotPostMove = currentKnotMove;
+
+                // We're at the tail. Record the coordinates!
+                if (i === knotLength - 1 && !tailRoute.has(currentKnotMove.x + ',' + currentKnotMove.y)) {
+                    if (debug2) console.log(`Tail Route: ${currentKnotMove.x},${currentKnotMove.y}`);
+                    tailRoute.add(currentKnotMove.x + ',' + currentKnotMove.y);
+                }
+            });
         }
-
     }
 
     console.log(tailRoute.size);
