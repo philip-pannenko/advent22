@@ -19,3 +19,21 @@ if the instruction is addx
     check if the counter is 20.
 
 ```
+
+    for each cycle time advance the CRT position
+    
+    each time the addx executes move the sprite
+        represent sprite beginning / middle / end
+
+```
+
+###..#..#..##...##...##..###..#..#.####.
+#..#.#..#.#..#.#..#.#..#.#..#.#..#....#.
+###..#..#.#....#..#.#....###..#..#...#..
+#..#.#..#.#....####.#....#..#.#..#..#...
+#..#.#..#.#..#.#..#.#..#.#..#.#..#.#....
+###...##...##..#..#..##..###...##..####.
+
+
+
+```
