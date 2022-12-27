@@ -1,17 +1,13 @@
 {
   "name": "advent2022",
   "version": "1.0.0",
-  "dependencies": {
-    "stats-lite": "^2.2.0"
-  },
   "scripts": {
-    "start": "ts-node ./day10/index.ts"
+    "start": "ts-node ./day11/index.ts"
   },
-
   "devDependencies": {
     "@types/node": "^18.11.10",
     "ts-node": "^10.9.1",
-    "tslib": "^2.4.1"
+    "tslib": "^2.4.1",
+    "typescript": "^4.9.4"
   }
 }
-
